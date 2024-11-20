@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"net/url"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -50,9 +49,8 @@ func Dial(address string, password string, options ...Option) (*Conn, error) {
 		option(&settings)
 	}
 
-	u := url.URL{Scheme: "ws", Host: address, Path: password}
-
-	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	u := fmt.Sprintf("ws://%s/%s", address, password)
+	conn, _, err := websocket.DefaultDialer.Dial(u, nil)
 	if err != nil {
 		if err.Error() == `malformed HTTP response "\x88\x02\x03\xe8"` {
 			return nil, ErrAuthFailed
